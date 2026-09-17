@@ -12,8 +12,8 @@ answer in a corner box.
    in Tampermonkey via `GM_setValue` — it is **not** hardcoded in the script.
 
 ## Controls
-- **Capture** button or **⇧⌘]** — grab one frame of the shared screen and ask Claude.
-- **Hide** — collapse the box to a small pill; click the pill to bring it back.
+- **Capture** button or **⇧⌘§** — grab one frame of the shared screen and ask Claude.
+- **⇧⌘\\** — hide / show the box (when hidden, a small pill remains; click it to restore).
 - Drag the blue header to move the box.
 
 ## Notes

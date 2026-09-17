@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Screen Answer (Claude)
 // @namespace    http://tampermonkey.net/
-// @version      1.0
-// @description  Small corner box: capture the screen, ask Claude, show a short answer. No hiding, no disguise.
+// @version      1.1
+// @description  Small corner box: capture the screen, ask Claude, show a short answer. Shortcuts: Shift+Cmd+§ capture, Shift+Cmd+\\ hide/show.
 // @match        *://*/*
 // @grant        GM_xmlhttpRequest
 // @grant        GM_setValue
@@ -46,14 +46,8 @@
     btn.textContent = 'Capture';
     btn.style.cssText = 'border:0;border-radius:6px;background:#0f172a;color:#fff;font-size:12px;padding:2px 8px;cursor:pointer';
 
-    const hideBtn = document.createElement('button');
-    hideBtn.textContent = 'Hide';
-    hideBtn.title = 'Hide (⇧⌘] still captures)';
-    hideBtn.style.cssText = 'border:0;border-radius:6px;background:#0f172a;color:#fff;font-size:12px;padding:2px 8px;cursor:pointer';
-
     header.appendChild(title);
     header.appendChild(btn);
-    header.appendChild(hideBtn);
 
     // Collapsed pill shown when hidden
     const pill = document.createElement('div');
@@ -71,7 +65,6 @@
         box.style.display = h ? 'none' : 'block';
         pill.style.display = h ? 'flex' : 'none';
     }
-    hideBtn.addEventListener('click', () => setHidden(true));
     pill.addEventListener('click', () => setHidden(false));
 
     const out = document.createElement('div');
@@ -176,11 +169,19 @@
 
     btn.addEventListener('click', runCapture);
 
-    // Keyboard shortcut: Shift + Cmd + ]  (Shift + Ctrl + ] on Windows/Linux)
+    // Keyboard shortcuts (Cmd on Mac, Ctrl on Windows/Linux):
+    //   Shift + Cmd + §  -> capture
+    //   Shift + Cmd + \  -> hide / show toggle
     window.addEventListener('keydown', e => {
-        if (e.shiftKey && (e.metaKey || e.ctrlKey) && (e.key === ']' || e.code === 'BracketRight')) {
+        if (!(e.shiftKey && (e.metaKey || e.ctrlKey))) return;
+        const isSection = e.key === '§' || e.key === '±' || e.code === 'IntlBackslash' || e.code === 'Backquote';
+        const isBackslash = e.code === 'Backslash' || e.key === '\\' || e.key === '|';
+        if (isSection) {
             e.preventDefault();
             runCapture();
+        } else if (isBackslash) {
+            e.preventDefault();
+            setHidden(box.style.display === 'none' ? false : true);
         }
     }, true);
 })();
